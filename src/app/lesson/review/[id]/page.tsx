@@ -40,6 +40,7 @@ export default function Page() {
   const params = useParams();
   const [state, dispatch] = useReducer(reducer, initialState);
   const lessonList = getLessonByID(Number(params.id));
+  const speed = 80; //TODO: add speed option feature later.
 
   if (lessonList.length === 0) {
     // doesn't have the lesson about the id
@@ -61,7 +62,12 @@ export default function Page() {
   const handleNext = () => {
     dispatch({ type: "TOGGLE_EN", showEn: true });
     if (state.showEN === false) {
-      delay(() => dispatch({ type: "NEXT" }), 1000);
+      delay(
+        () => dispatch({ type: "NEXT" }),
+        list[state.index].english.length * speed < 1000 // delay is different according to the length of the english
+          ? 1000
+          : list[state.index].english.length * 100
+      );
     } else {
       // if the english has already shown, turn the page directly.
       dispatch({ type: "NEXT" });
