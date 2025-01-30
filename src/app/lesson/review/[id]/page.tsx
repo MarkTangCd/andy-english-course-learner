@@ -40,7 +40,7 @@ export default function Page() {
   const params = useParams();
   const [state, dispatch] = useReducer(reducer, initialState);
   const lessonList = getLessonByID(Number(params.id));
-  const speed = 80; //TODO: add speed option feature later.
+  const speed = 60; //TODO: add speed option feature later.
 
   if (lessonList.length === 0) {
     // doesn't have the lesson about the id

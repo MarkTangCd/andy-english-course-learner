@@ -3,13 +3,34 @@ import Link from "next/link";
 import { getLessonByID } from "@/data";
 
 import { getAudioUrl } from "@/utils";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { PrismaClient } from "@prisma/client/extension";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const id = (await params).id;
+interface Params extends Record<string, string | string[]> {
+  id: string;
+}
+
+interface LessonProps {
+  id: string;
+}
+
+// Initialize Prisma Client
+const prisma = new PrismaClient();
+
+export const getServerSideProps: GetServerSideProps<Params, Params> = async (
+  context: GetServerSidePropsContext<Params>
+) => {
+  const { id } = context.params!;
+  const lesson = await prisma.course.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+  });
+
+  return { props: { id, lesson } };
+};
+
+export default async function Page({ id }: LessonProps) {
   const list = getLessonByID(Number(id));
 
   if (list.length === 0) {
