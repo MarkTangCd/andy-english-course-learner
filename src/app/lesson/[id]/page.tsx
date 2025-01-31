@@ -3,34 +3,40 @@ import Link from "next/link";
 import { getLessonByID } from "@/data";
 
 import { getAudioUrl } from "@/utils";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { PrismaClient } from "@prisma/client/extension";
+// import { GetServerSideProps, GetServerSidePropsContext } from "next";
+// import { PrismaClient } from "@prisma/client/extension";
 
-interface Params extends Record<string, string | string[]> {
-  id: string;
-}
+// interface Params extends Record<string, string | string[]> {
+//   id: string;
+// }
 
 interface LessonProps {
   id: string;
 }
 
 // Initialize Prisma Client
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
-export const getServerSideProps: GetServerSideProps<Params, Params> = async (
-  context: GetServerSidePropsContext<Params>
-) => {
-  const { id } = context.params!;
-  const lesson = await prisma.course.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-  });
+// export const getServerSideProps: GetServerSideProps<Params, Params> = async (
+//   context: GetServerSidePropsContext<Params>
+// ) => {
+//   const { id } = context.params!;
+//   const lesson = await prisma.course.findUnique({
+//     where: {
+//       id: parseInt(id),
+//     },
+//   });
 
-  return { props: { id, lesson } };
-};
+//   return { props: { id, lesson } };
+// };
 
-export default async function Page({ id }: LessonProps) {
+// export default async function Page({ id }: LessonProps) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const id = (await params).id;
   const list = getLessonByID(Number(id));
 
   if (list.length === 0) {
