@@ -1,0 +1,27 @@
+.btn {
+  @apply bg-[#ce282b] text-white font-bold py-2 px-4 rounded;
+}
+
+.lesson-container {
+  @apply w-full bg-[#decaaf] flex flex-col p-10;
+}
+
+.lesson-header {
+  @apply flex items-center gap-x-8 text-2xl font-bold text-[#ce282b];
+}
+
+.audio-item {
+  @apply w-[22%] flex flex-col gap-2;
+}
+
+.audio-controls {
+  @apply w-full;
+}
+
+.lesson-list {
+  @apply w-full flex justify-around gap-5 flex-wrap mt-8;
+}
+
+.lesson-list-item {
+  @apply w-[22%] p-2 bg-[#0d262c] flex flex-col gap-y-3 text-sm text-[#decaaf];
+}
