@@ -1,41 +1,44 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getLessonByID } from "@/data";
 
 import { getAudioUrl } from "@/utils";
 
 import "./styles.css";
-import { usePrismaContext } from "@/context/PrismaProvider";
+import { prisma } from "@/context/PrismaProvider";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const { id } = params;
-  // Fetch lesson data from the database
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  // Modified database query to include words
   const res = await prisma.course.findUnique({
     where: {
       id: parseInt(id),
     },
+    include: {
+      word: true, // Include related words
+    },
   });
 
-  // If lesson doesn't exist, redirect to home
   if (!res) {
     redirect("/");
   }
 
-  const list = getLessonByID(Number(id));
-
-  if (list.length === 0) {
-    // doesn't have the lesson about the id
-    redirect("/");
-  }
-
-  const lesson = list[0];
+  // Merge course data with words list
+  const lesson = {
+    ...res,
+    list: res.word || [], // Use the included words as list
+  };
 
   return (
     <div className="lesson-container">
       <div className="lesson-header">
         <div>Lesson: {lesson.name}</div>
         <Link href={`review/${id}`}>
-          <button className="btn">Review</button>
+          <button className="btn btn-active btn-accent">Review</button>
         </Link>
       </div>
       <div className="w-full flex gap-5 flex-wrap mt-8">

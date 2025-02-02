@@ -1,10 +1,8 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { BsArrowRightCircle } from "react-icons/bs";
-import list from "@/data/index";
+import LessonLink from "@/components/LessonLink";
+import { prisma } from "@/context/PrismaProvider";
 
-export default function Home() {
-  const router = useRouter();
+export default async function Home() {
+  const list = await prisma.course.findMany();
 
   return (
     <div className="w-full flex justify-between">
@@ -12,14 +10,7 @@ export default function Home() {
         <div className="text-xl font-bold text-[#ce282b]">Lessons</div>
         <ul className="w-full flex justify-around flex-wrap gap-x-4 mt-3">
           {list.map((item) => (
-            <li
-              key={item.id}
-              className="flex-1 p-5 bg-[#0d262c] text-[#decaaf] text-base flex justify-between cursor-pointer"
-              onClick={() => router.push(`/lesson/${item.id}`)}
-            >
-              <div>{item.name}</div>
-              <BsArrowRightCircle />
-            </li>
+            <LessonLink key={item.id} id={item.id} name={item.name} />
           ))}
         </ul>
       </div>
