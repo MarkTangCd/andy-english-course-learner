@@ -12,7 +12,6 @@ export default async function Page({
       course_id: Number(id),
     },
   });
-  console.log(words);
 
   return (
     <div className="w-full h-[80vh] bg-[#decaaf] flex items-center p-10">

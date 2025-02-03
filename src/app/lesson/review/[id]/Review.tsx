@@ -3,7 +3,7 @@ import { useMemo, useReducer } from "react";
 import { delay } from "lodash";
 import { redirect } from "next/navigation";
 import { BsPlayCircle } from "react-icons/bs";
-
+import { synthesizeSpeech } from "@/utils/TTS";
 interface ReviewState {
   index: number;
   showEN: boolean;
@@ -47,12 +47,17 @@ export default function Review({ words }: { words: Word[] }) {
   const list = useMemo(() => words.sort(() => Math.random() - 0.5), [words]);
 
   const handlePlayAudio = () => {
-    const utterance = new SpeechSynthesisUtterance(list[state.index].english);
-    utterance.lang = "en-US";
-    window.speechSynthesis.speak(utterance);
+    try {
+      synthesizeSpeech(list[state.index].english);
+    } catch {
+      const utterance = new SpeechSynthesisUtterance(list[state.index].english);
+      utterance.lang = "en-US";
+      window.speechSynthesis.speak(utterance);
+    }
   };
 
   const handleNext = () => {
+    handlePlayAudio();
     dispatch({ type: "TOGGLE_EN", showEn: true });
     if (state.showEN === false) {
       delay(
