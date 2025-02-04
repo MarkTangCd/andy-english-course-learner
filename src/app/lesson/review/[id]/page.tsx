@@ -15,7 +15,7 @@ export default async function Page({
 
   return (
     <div className="w-full h-[80vh] bg-[#decaaf] flex items-center p-10">
-      <Review words={words} />
+      <Review words={words} courseId={id} />
     </div>
   );
 }

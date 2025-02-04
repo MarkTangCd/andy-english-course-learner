@@ -1,9 +1,10 @@
 "use client";
-import { useMemo, useReducer } from "react";
+import { useMemo, useReducer, useEffect } from "react";
 import { delay } from "lodash";
 import { redirect } from "next/navigation";
 import { BsPlayCircle } from "react-icons/bs";
 import { synthesizeSpeech } from "@/utils/TTS";
+
 interface ReviewState {
   index: number;
   showEN: boolean;
@@ -35,7 +36,13 @@ function reducer(
   }
 }
 
-export default function Review({ words }: { words: Word[] }) {
+export default function Review({
+  words,
+  courseId,
+}: {
+  words: Word[];
+  courseId: string;
+}) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const speed = 60; //TODO: add speed option feature later.
 
@@ -45,6 +52,20 @@ export default function Review({ words }: { words: Word[] }) {
   }
 
   const list = useMemo(() => words.sort(() => Math.random() - 0.5), [words]);
+
+  useEffect(() => {
+    if (state.index === words.length - 1) {
+      if (courseId) {
+        fetch("/api/review", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ courseId: Number(courseId) }),
+        }).catch(console.error);
+      }
+    }
+  }, [state.index, words, courseId]);
 
   const handlePlayAudio = () => {
     try {

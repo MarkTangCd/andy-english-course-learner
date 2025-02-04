@@ -8,17 +8,20 @@ datasource db {
 }
 
 model course {
-  id    Int      @id @default(autoincrement())
-  name  String   @unique @db.VarChar(255)
-  audio String[]
-  word  word[]
+  id     Int      @id @default(autoincrement())
+  name   String   @unique @db.VarChar(255)
+  audio  String[]
+  word   word[]
+  review review[]
 }
 
 model review {
   id           Int       @id @default(autoincrement())
+  course_id    Int       @unique
   count        Int?
   created_time DateTime? @default(now()) @db.Timestamp(6)
   updated_time DateTime? @default(now()) @db.Timestamp(6)
+  course       course    @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model word {
