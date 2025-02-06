@@ -1,16 +1,27 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { BsArrowRightCircle } from "react-icons/bs";
+import Link from "next/link";
 
-export default function LessonLink({ id, name }: { id: number; name: string }) {
+export default function LessonLink({
+  course,
+  badgeText,
+}: {
+  course: Course;
+  badgeText?: string;
+}) {
   const router = useRouter();
   return (
-    <li
-      className="flex-1 p-5 bg-[#0d262c] text-[#decaaf] text-base flex justify-between cursor-pointer"
-      onClick={() => router.push(`/lesson/${id}`)}
+    <Link
+      href={`/lesson/${course.id}`}
+      className="card w-96 bg-base-100 shadow-xl hover:shadow-2xl transition-shadow"
     >
-      <div>{name}</div>
-      <BsArrowRightCircle />
-    </li>
+      <div className="card-body">
+        <h2 className="card-title">
+          {course.name}
+          {badgeText && <div className="badge badge-accent">{badgeText}</div>}
+        </h2>
+      </div>
+    </Link>
   );
 }

@@ -16,12 +16,12 @@ model course {
 }
 
 model review {
-  id           Int       @id @default(autoincrement())
-  course_id    Int       @unique
-  count        Int?
-  created_time DateTime? @default(now()) @db.Timestamp(6)
-  updated_time DateTime? @default(now()) @db.Timestamp(6)
-  course       course    @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id           Int      @id @default(autoincrement())
+  course_id    Int      @unique
+  count        Int      @default(0)
+  created_time DateTime @default(now()) @db.Timestamp(6)
+  updated_time DateTime @default(now()) @db.Timestamp(6)
+  course       course   @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model word {
