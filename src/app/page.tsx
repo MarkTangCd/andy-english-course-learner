@@ -2,7 +2,13 @@ import LessonLink from "@/components/LessonLink";
 import { prisma } from "@/context/PrismaProvider";
 
 export default async function Home() {
-  const courses = await prisma.course.findMany();
+  const courses = await prisma.course.findMany({
+    orderBy: [
+      {
+        id: "desc",
+      },
+    ],
+  });
   const reviewCourses = await prisma.review.findMany({
     include: {
       course: true,
