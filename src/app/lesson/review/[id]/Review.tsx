@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useReducer, useEffect } from "react";
+import { useState, useMemo, useReducer, useEffect } from "react";
 import { delay } from "lodash";
 import { redirect } from "next/navigation";
 import { BsPlayCircle } from "react-icons/bs";
@@ -44,6 +44,10 @@ export default function Review({
   courseId: string;
 }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [sentences, setSentences] = useState<string[]>([]);
+  const [showSentenceModal, setShowSentenceModal] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const [currentSentence, setCurrentSentence] = useState("");
   const speed = 60; //TODO: add speed option feature later.
 
   if (words.length === 0) {
@@ -66,6 +70,13 @@ export default function Review({
       }
     }
   }, [state.index, words, courseId]);
+
+  useEffect(() => {
+    // Show sentence modal when index changes
+    if (state.index >= 0 && state.index < list.length) {
+      setShowSentenceModal(true);
+    }
+  }, [state.index]);
 
   const handlePlayAudio = () => {
     try {
@@ -91,6 +102,18 @@ export default function Review({
       // if the english has already shown, turn the page directly.
       dispatch({ type: "NEXT" });
     }
+  };
+
+  const handleSentenceSubmit = () => {
+    const newSentences = [...sentences];
+    newSentences[state.index] = currentSentence;
+    setSentences(newSentences);
+    setCurrentSentence("");
+    setShowSentenceModal(false);
+  };
+
+  const handleDone = () => {
+    setShowSummary(true);
   };
 
   return (
@@ -125,14 +148,74 @@ export default function Review({
         )}
       </div>
       <div className="w-[100px]">
-        <button
-          className="btn btn-neutral"
-          disabled={state.index === words.length - 1}
-          onClick={handleNext}
-        >
-          Next
-        </button>
+        {state.index === words.length - 1 ? (
+          <button className="btn btn-success" onClick={handleDone}>
+            Done
+          </button>
+        ) : (
+          <button
+            className="btn btn-neutral"
+            disabled={state.index === words.length - 1}
+            onClick={handleNext}
+          >
+            Next
+          </button>
+        )}
       </div>
+
+      {/* Sentence Input Modal */}
+      {showSentenceModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="text-lg font-bold">
+              Create a sentence with: {list[state.index].english}
+            </h3>
+            <input
+              type="text"
+              placeholder="Enter your sentence"
+              className="input input-bordered w-full mt-4"
+              value={currentSentence}
+              onChange={(e) => setCurrentSentence(e.target.value)}
+            />
+            <div className="modal-action">
+              <button
+                className="btn btn-ghost"
+                onClick={() => setShowSentenceModal(false)}
+              >
+                Skip
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleSentenceSubmit}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Summary Modal */}
+      {showSummary && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-2xl">
+            <h3 className="text-lg font-bold mb-4">Your Sentences</h3>
+            <ul className="list-disc pl-5">
+              {list.map((word, index) => (
+                <li key={word.id} className="mb-2">
+                  <span className="font-semibold">{word.english}:</span>{" "}
+                  {sentences[index] || "No sentence created"}
+                </li>
+              ))}
+            </ul>
+            <div className="modal-action">
+              <button className="btn" onClick={() => setShowSummary(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
