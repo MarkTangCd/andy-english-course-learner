@@ -71,16 +71,9 @@ export default function Review({
     }
   }, [state.index, words, courseId]);
 
-  useEffect(() => {
-    // Show sentence modal when index changes
-    if (state.index >= 0 && state.index < list.length) {
-      setShowSentenceModal(true);
-    }
-  }, [state.index]);
-
-  const handlePlayAudio = () => {
+  const handlePlayAudio = (sentence?: string) => {
     try {
-      synthesizeSpeech(list[state.index].english);
+      synthesizeSpeech(sentence || list[state.index].english);
     } catch {
       const utterance = new SpeechSynthesisUtterance(list[state.index].english);
       utterance.lang = "en-US";
@@ -90,26 +83,42 @@ export default function Review({
 
   const handleNext = () => {
     handlePlayAudio();
-    dispatch({ type: "TOGGLE_EN", showEn: true });
-    if (state.showEN === false) {
-      delay(
-        () => dispatch({ type: "NEXT" }),
-        list[state.index].english.length * speed < 1000 // delay is different according to the length of the english
-          ? 1000
-          : list[state.index].english.length * 100
-      );
+    if (list[state.index].english.split(" ").length > 4) {
+      processNextLogic();
     } else {
-      // if the english has already shown, turn the page directly.
-      dispatch({ type: "NEXT" });
+      setShowSentenceModal(true);
     }
   };
 
   const handleSentenceSubmit = () => {
+    handlePlayAudio(currentSentence);
     const newSentences = [...sentences];
     newSentences[state.index] = currentSentence;
     setSentences(newSentences);
     setCurrentSentence("");
     setShowSentenceModal(false);
+    processNextLogic();
+  };
+
+  const processNextLogic = () => {
+    dispatch({ type: "TOGGLE_EN", showEn: true });
+    if (state.showEN === false) {
+      delay(
+        () => {
+          dispatch({ type: "NEXT" });
+        },
+        list[state.index].english.length * speed < 1000
+          ? 1000
+          : list[state.index].english.length * 100
+      );
+    } else {
+      dispatch({ type: "NEXT" });
+    }
+  };
+
+  const handleModalSkip = () => {
+    setShowSentenceModal(false);
+    processNextLogic();
   };
 
   const handleDone = () => {
@@ -130,7 +139,7 @@ export default function Review({
       <div className="flex-1 flex flex-col items-center justify-center gap-y-5">
         <div className="flex gap-x-5 text-4xl font-bold text-[#0d262c]">
           <div>{list[state.index].chinese}</div>
-          <button className="btn btn-square" onClick={handlePlayAudio}>
+          <button className="btn btn-square" onClick={() => handlePlayAudio()}>
             <BsPlayCircle />
           </button>
         </div>
@@ -178,10 +187,7 @@ export default function Review({
               onChange={(e) => setCurrentSentence(e.target.value)}
             />
             <div className="modal-action">
-              <button
-                className="btn btn-ghost"
-                onClick={() => setShowSentenceModal(false)}
-              >
+              <button className="btn btn-ghost" onClick={handleModalSkip}>
                 Skip
               </button>
               <button
