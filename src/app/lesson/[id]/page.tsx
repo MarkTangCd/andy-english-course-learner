@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 
 import { getAudioUrl } from "@/utils";
+import WordList from "@/components/WordList";
 
 import "./styles.css";
 import { prisma } from "@/context/PrismaProvider";
@@ -53,14 +54,7 @@ export default async function Page({
           </div>
         ))}
       </div>
-      <ul className="lesson-list">
-        {lesson.list?.slice(0, 16).map((item) => (
-          <li key={item.id} className="lesson-list-item">
-            <div className="text-lg font-bold">{item.chinese}</div>
-            <div>{item.english}</div>
-          </li>
-        ))}
-      </ul>
+      <WordList words={lesson.list} />
     </div>
   );
 }
