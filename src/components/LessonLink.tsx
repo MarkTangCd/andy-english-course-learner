@@ -1,16 +1,12 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { BsArrowRightCircle } from "react-icons/bs";
 import Link from "next/link";
-
 export default function LessonLink({
   course,
   badgeText,
 }: {
-  course: Course;
+  course: { id: number; name: string };
   badgeText?: string;
 }) {
-  const router = useRouter();
   return (
     <Link
       href={`/lesson/${course.id}`}
